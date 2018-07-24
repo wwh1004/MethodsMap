@@ -94,6 +94,7 @@ namespace MethodsMap {
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FilterForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Filter";
             this.Load += new System.EventHandler(this.FilterForm_Load);

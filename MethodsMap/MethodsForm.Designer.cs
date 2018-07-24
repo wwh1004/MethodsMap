@@ -25,6 +25,7 @@ namespace MethodsMap {
 		private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MethodsForm));
             this._lvwMethods = new System.Windows.Forms.ListView();
             this._chMethodFullName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this._chMethodToken = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -112,10 +113,10 @@ namespace MethodsMap {
             this.ClientSize = new System.Drawing.Size(936, 528);
             this.Controls.Add(this._lvwMethods);
             this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "MethodsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "MethodsMap 1.3 by Wwh / Net7Cracker";
             this._mnuMethodsContext.ResumeLayout(false);
             this.ResumeLayout(false);
 
