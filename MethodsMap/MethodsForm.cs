@@ -30,6 +30,7 @@ namespace MethodsMap {
 			_methodHandlesMap = new Dictionary<ListViewItem, RuntimeMethodHandle>();
 			Text = GetAssemblyAttribute<AssemblyProductAttribute>().Product + " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " by " + GetAssemblyAttribute<AssemblyCopyrightAttribute>().Copyright.Substring(17);
 			InitializeComponent();
+			typeof(ListView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, _lvwMethods, new object[] { true });
 			_lvwMethods_Resize(_lvwMethods, new EventArgs());
 		}
 
