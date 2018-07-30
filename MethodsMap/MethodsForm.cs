@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -11,10 +12,13 @@ namespace MethodsMap {
 
 		private string _keyword;
 
+		private Dictionary<ListViewItem, RuntimeMethodHandle> _methodHandlesMap;
+
 		public Module[] Modules {
 			get => _modules;
 			set => _modules = value;
 		}
+
 		public string Keyword {
 			get => _keyword;
 			set => _keyword = value;
@@ -22,7 +26,8 @@ namespace MethodsMap {
 
 		public MethodsForm() {
 			_modules = new Module[0];
-			Keyword = string.Empty;
+			_keyword = string.Empty;
+			_methodHandlesMap = new Dictionary<ListViewItem, RuntimeMethodHandle>();
 			Text = GetAssemblyAttribute<AssemblyProductAttribute>().Product + " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " by " + GetAssemblyAttribute<AssemblyCopyrightAttribute>().Copyright.Substring(17);
 			InitializeComponent();
 			_lvwMethods_Resize(_lvwMethods, new EventArgs());
@@ -46,6 +51,19 @@ namespace MethodsMap {
 			if (ReferenceEquals(_oldModules, _modules))
 				//操作实际上未执行
 				return;
+			RefreshMethodsList();
+		}
+
+		private void _mnuPrepareMethod_Click(object sender, EventArgs e) {
+			if (_lvwMethods.SelectedItems.Count == 0)
+				return;
+
+			foreach (ListViewItem item in _lvwMethods.SelectedItems)
+				try {
+					RuntimeHelpers.PrepareMethod(_methodHandlesMap[item]);
+				}
+				catch {
+				}
 			RefreshMethodsList();
 		}
 
@@ -84,11 +102,12 @@ namespace MethodsMap {
 			List<ListViewItem> itemList;
 
 			_lvwMethods.Items.Clear();
+			_methodHandlesMap.Clear();
 			itemList = new List<ListViewItem>();
 			foreach (Module module in _modules) {
 				for (int i = 0x06000001; i < int.MaxValue; i++) {
 					MethodBase methodBase;
-					string methodSig;
+					string methodFullName;
 					ListViewItem item;
 
 					try {
@@ -104,20 +123,21 @@ namespace MethodsMap {
 					}
 					if (methodBase.IsGenericMethodDefinition)
 						continue;
-					methodSig = methodBase.ToString();
-					if (methodBase.ReflectedType != null)
-						methodSig = methodSig.Insert(methodSig.IndexOf(' ') + 1, methodBase.ReflectedType.FullName + ".");
-					item = new ListViewItem(methodSig);
+					methodFullName = methodBase.ToString();
+					if (methodBase.DeclaringType != null)
+						methodFullName = methodFullName.Insert(methodFullName.IndexOf(' ') + 1, methodBase.DeclaringType.FullName + ".");
+					item = new ListViewItem(methodFullName);
 					item.SubItems.Add("0x" + i.ToString("X8"));
 					item.SubItems.Add("0x" + methodBase.MethodHandle.GetFunctionPointer().ToString(IntPtr.Size == 8 ? "X16" : "X8"));
 					if (string.IsNullOrEmpty(_keyword))
 						itemList.Add(item);
 					else
 						foreach (ListViewItem.ListViewSubItem subItem in item.SubItems)
-							if (subItem.Text.Contains(Keyword)) {
+							if (subItem.Text.Contains(_keyword)) {
 								itemList.Add(item);
 								break;
 							}
+					_methodHandlesMap.Add(item, methodBase.MethodHandle);
 				}
 			}
 			_lvwMethods.Items.AddRange(itemList.ToArray());

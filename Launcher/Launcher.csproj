@@ -8,7 +8,6 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Launcher</RootNamespace>
     <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug NET20|AnyCPU' ">
     <AssemblyName>Launcher.NET20</AssemblyName>
