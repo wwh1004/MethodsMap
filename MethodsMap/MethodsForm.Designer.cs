@@ -33,8 +33,8 @@ namespace MethodsMap {
             this._mnuMethodsContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this._mnuRefresh = new System.Windows.Forms.ToolStripMenuItem();
             this._mnuFilter = new System.Windows.Forms.ToolStripMenuItem();
-            this._mnuCopy = new System.Windows.Forms.ToolStripMenuItem();
             this._mnuPrepareMethod = new System.Windows.Forms.ToolStripMenuItem();
+            this._mnuCopy = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this._mnuMethodsContext.SuspendLayout();
             this.SuspendLayout();
@@ -42,7 +42,7 @@ namespace MethodsMap {
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            toolStripSeparator1.Size = new System.Drawing.Size(165, 6);
             // 
             // _lvwMethods
             // 
@@ -85,33 +85,33 @@ namespace MethodsMap {
             this._mnuPrepareMethod,
             this._mnuCopy});
             this._mnuMethodsContext.Name = "_mnuMethodsContext";
-            this._mnuMethodsContext.Size = new System.Drawing.Size(181, 120);
+            this._mnuMethodsContext.Size = new System.Drawing.Size(169, 98);
             // 
             // _mnuRefresh
             // 
             this._mnuRefresh.Name = "_mnuRefresh";
-            this._mnuRefresh.Size = new System.Drawing.Size(180, 22);
+            this._mnuRefresh.Size = new System.Drawing.Size(168, 22);
             this._mnuRefresh.Text = "Refresh";
             this._mnuRefresh.Click += new System.EventHandler(this._mnuRefresh_Click);
             // 
             // _mnuFilter
             // 
             this._mnuFilter.Name = "_mnuFilter";
-            this._mnuFilter.Size = new System.Drawing.Size(180, 22);
+            this._mnuFilter.Size = new System.Drawing.Size(168, 22);
             this._mnuFilter.Text = "Filter...";
             this._mnuFilter.Click += new System.EventHandler(this._mnuFilter_Click);
-			// 
-			// _mnuPrepareMethod
-			// 
-			this._mnuPrepareMethod.Name = "_mnuPrepareMethod";
-			this._mnuPrepareMethod.Size = new System.Drawing.Size(180, 22);
-			this._mnuPrepareMethod.Text = "PrepareMethod";
-			this._mnuPrepareMethod.Click += new System.EventHandler(this._mnuPrepareMethod_Click);
-			// 
-			// _mnuCopy
-			// 
-			this._mnuCopy.Name = "_mnuCopy";
-            this._mnuCopy.Size = new System.Drawing.Size(180, 22);
+            // 
+            // _mnuPrepareMethod
+            // 
+            this._mnuPrepareMethod.Name = "_mnuPrepareMethod";
+            this._mnuPrepareMethod.Size = new System.Drawing.Size(168, 22);
+            this._mnuPrepareMethod.Text = "PrepareMethod";
+            this._mnuPrepareMethod.Click += new System.EventHandler(this._mnuPrepareMethod_Click);
+            // 
+            // _mnuCopy
+            // 
+            this._mnuCopy.Name = "_mnuCopy";
+            this._mnuCopy.Size = new System.Drawing.Size(168, 22);
             this._mnuCopy.Text = "Copy";
             this._mnuCopy.Click += new System.EventHandler(this._mnuCopy_Click);
             // 
