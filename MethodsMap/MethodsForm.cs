@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Forms;
 
 namespace MethodsMap {
 	internal partial class MethodsForm : Form {
+		private static readonly MethodInfo MethodInfo_InvokeMethodFast = typeof(RuntimeMethodHandle).GetMethod("InvokeMethodFast", BindingFlags.NonPublic | BindingFlags.Instance);
+		private static readonly Type Type_RuntimeMethodInfo = typeof(object).Module.GetType("System.Reflection.RuntimeMethodInfo");
+		private static readonly PropertyInfo PropertyInfo_Signature = Type_RuntimeMethodInfo.GetProperty("Signature", BindingFlags.NonPublic | BindingFlags.Instance);
+		private static readonly FieldInfo FieldInfo_m_methodAttributes = Type_RuntimeMethodInfo.GetField("m_methodAttributes", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		private Module[] _modules;
-
 		private string _keyword;
-
 		private Dictionary<ListViewItem, RuntimeMethodHandle> _methodHandlesMap;
 
 		public Module[] Modules {
@@ -32,6 +35,10 @@ namespace MethodsMap {
 			InitializeComponent();
 			typeof(ListView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, _lvwMethods, new object[] { true });
 			_lvwMethods_Resize(_lvwMethods, new EventArgs());
+			_modules = new Module[] {
+				Assembly.GetEntryAssembly().ManifestModule
+			};
+			RefreshMethodsList();
 		}
 
 		private static T GetAssemblyAttribute<T>() => (T)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(T), false)[0];
@@ -69,6 +76,44 @@ namespace MethodsMap {
 			RefreshMethodsList();
 		}
 
+		private void _mnuNullInvoke_Click(object sender, EventArgs e) {
+			if (_lvwMethods.SelectedItems.Count == 0)
+				return;
+
+			foreach (ListViewItem item in _lvwMethods.SelectedItems)
+				try {
+					RuntimeMethodHandle methodHandle;
+					MethodBase methodBase;
+					MethodInfo methodInfo;
+					//DynamicMethod dynamicMethod;
+					//ILGenerator ilGenerator;
+					//int length;
+
+					methodHandle = _methodHandlesMap[item];
+					methodBase = MethodBase.GetMethodFromHandle(methodHandle);
+					methodInfo = methodBase as MethodInfo;
+					if (methodInfo == null) {
+						MessageBox.Show(methodBase.ToString() + " 不是 " + nameof(MethodInfo));
+						continue;
+					}
+					//dynamicMethod = new DynamicMethod(string.Empty, typeof(void), new type, true);
+					//ilGenerator = dynamicMethod.GetILGenerator();
+					//ilGenerator.Emit(OpCodes.Ldarg_0)
+					//if (!methodInfo.IsStatic)
+					//	ilGenerator.Emit(OpCodes.Ldc_I4_0);
+					//length = methodInfo.GetParameters().Length;
+					//for (int i = 0; i < length; i++)
+					//	ilGenerator.Emit(OpCodes.Ldc_I4_0);
+					//ilGenerator.EmitCall(OpCodes.Call, methodInfo, null);
+					//ilGenerator.Emit(OpCodes.Ret);
+					//dynamicMethod.Invoke(null, null);
+					NullInvoke(methodHandle, methodInfo);
+				}
+				catch {
+				}
+			RefreshMethodsList();
+		}
+
 		private void _mnuCopy_Click(object sender, EventArgs e) {
 			if (_lvwMethods.SelectedItems.Count == 0)
 				return;
@@ -92,6 +137,8 @@ namespace MethodsMap {
 				builder.Append(_lvwMethods.SelectedItems[i].SubItems[1].Text);
 				builder.Append(' ', 4);
 				builder.Append(_lvwMethods.SelectedItems[i].SubItems[2].Text);
+				builder.Append(' ', 4);
+				builder.Append(_lvwMethods.SelectedItems[i].SubItems[3].Text);
 				builder.AppendLine();
 			}
 			Clipboard.Clear();
@@ -116,7 +163,6 @@ namespace MethodsMap {
 						methodBase = module.ResolveMethod(i);
 					}
 					catch (ArgumentOutOfRangeException) {
-						// 遍历完所有方法
 						break;
 					}
 					catch {
@@ -144,6 +190,19 @@ namespace MethodsMap {
 				}
 			}
 			_lvwMethods.Items.AddRange(itemList.ToArray());
+		}
+
+		private static object NullInvoke(RuntimeMethodHandle methodHandle, MethodInfo methodInfo) {
+			object[] parameters;
+
+			parameters = new object[] {
+				null,
+				new object[methodInfo.GetParameters().Length],
+				PropertyInfo_Signature.GetValue(methodInfo,null),
+				FieldInfo_m_methodAttributes.GetValue(methodInfo),
+				methodInfo.DeclaringType == null ? default(RuntimeTypeHandle) : methodInfo.DeclaringType.TypeHandle
+			};
+			return MethodInfo_InvokeMethodFast.Invoke(methodHandle, parameters);
 		}
 	}
 }
