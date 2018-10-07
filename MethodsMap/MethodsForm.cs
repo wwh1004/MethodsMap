@@ -38,8 +38,9 @@ namespace MethodsMap {
 
 		private void _lvwMethods_Resize(object sender, EventArgs e) {
 			_chMethodAddress.Width = IntPtr.Size == 8 ? 200 : 100;
+			_chMethodHandle.Width = IntPtr.Size == 8 ? 200 : 100;
 			_chMethodToken.Width = 100;
-			_chMethodFullName.Width = _lvwMethods.Width - _chMethodToken.Width - _chMethodAddress.Width - 17;
+			_chMethodFullName.Width = _lvwMethods.Width - _chMethodToken.Width - _chMethodAddress.Width - _chMethodHandle.Width - 17;
 		}
 
 		private void _mnuRefresh_Click(object sender, EventArgs e) => RefreshMethodsList();
@@ -130,6 +131,7 @@ namespace MethodsMap {
 					item = new ListViewItem(methodFullName);
 					item.SubItems.Add("0x" + i.ToString("X8"));
 					item.SubItems.Add("0x" + methodBase.MethodHandle.GetFunctionPointer().ToString(IntPtr.Size == 8 ? "X16" : "X8"));
+					item.SubItems.Add("0x" + methodBase.MethodHandle.Value.ToString(IntPtr.Size == 8 ? "X16" : "X8"));
 					if (string.IsNullOrEmpty(_keyword))
 						itemList.Add(item);
 					else

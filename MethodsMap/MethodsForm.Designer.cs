@@ -35,6 +35,7 @@ namespace MethodsMap {
             this._mnuFilter = new System.Windows.Forms.ToolStripMenuItem();
             this._mnuPrepareMethod = new System.Windows.Forms.ToolStripMenuItem();
             this._mnuCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this._chMethodHandle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this._mnuMethodsContext.SuspendLayout();
             this.SuspendLayout();
@@ -50,7 +51,8 @@ namespace MethodsMap {
             this._lvwMethods.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this._chMethodFullName,
             this._chMethodToken,
-            this._chMethodAddress});
+            this._chMethodAddress,
+            this._chMethodHandle});
             this._lvwMethods.ContextMenuStrip = this._mnuMethodsContext;
             this._lvwMethods.Dock = System.Windows.Forms.DockStyle.Fill;
             this._lvwMethods.FullRowSelect = true;
@@ -115,6 +117,10 @@ namespace MethodsMap {
             this._mnuCopy.Text = "Copy";
             this._mnuCopy.Click += new System.EventHandler(this._mnuCopy_Click);
             // 
+            // _chMethodHandle
+            // 
+            this._chMethodHandle.Text = "Handle";
+            // 
             // MethodsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
@@ -142,5 +148,6 @@ namespace MethodsMap {
 		private System.Windows.Forms.ToolStripMenuItem _mnuCopy;
 		private System.Windows.Forms.ColumnHeader _chMethodToken;
 		private System.Windows.Forms.ToolStripMenuItem _mnuPrepareMethod;
+		private System.Windows.Forms.ColumnHeader _chMethodHandle;
 	}
 }
