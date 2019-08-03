@@ -12,9 +12,9 @@ namespace MethodsMap {
 		private static readonly PropertyInfo PropertyInfo_Signature = Type_RuntimeMethodInfo.GetProperty("Signature", BindingFlags.NonPublic | BindingFlags.Instance);
 		private static readonly FieldInfo FieldInfo_m_methodAttributes = Type_RuntimeMethodInfo.GetField("m_methodAttributes", BindingFlags.NonPublic | BindingFlags.Instance);
 
+		private readonly Dictionary<ListViewItem, RuntimeMethodHandle> _methodHandles;
 		private Module[] _modules;
 		private string _keyword;
-		private Dictionary<ListViewItem, RuntimeMethodHandle> _methodHandlesMap;
 
 		public Module[] Modules {
 			get => _modules;
@@ -27,9 +27,9 @@ namespace MethodsMap {
 		}
 
 		public MethodsForm() {
+			_methodHandles = new Dictionary<ListViewItem, RuntimeMethodHandle>();
 			_modules = new Module[0];
 			_keyword = string.Empty;
-			_methodHandlesMap = new Dictionary<ListViewItem, RuntimeMethodHandle>();
 			Text = GetAssemblyAttribute<AssemblyProductAttribute>().Product + " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " by " + GetAssemblyAttribute<AssemblyCopyrightAttribute>().Copyright.Substring(17);
 			InitializeComponent();
 			typeof(ListView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, _lvwMethods, new object[] { true });
@@ -73,7 +73,7 @@ namespace MethodsMap {
 
 			foreach (ListViewItem item in _lvwMethods.SelectedItems)
 				try {
-					RuntimeHelpers.PrepareMethod(_methodHandlesMap[item]);
+					RuntimeHelpers.PrepareMethod(_methodHandles[item]);
 				}
 				catch {
 				}
@@ -90,7 +90,7 @@ namespace MethodsMap {
 					MethodBase methodBase;
 					MethodInfo methodInfo;
 
-					methodHandle = _methodHandlesMap[item];
+					methodHandle = _methodHandles[item];
 					methodBase = MethodBase.GetMethodFromHandle(methodHandle);
 					methodInfo = methodBase as MethodInfo;
 					if (methodInfo == null) {
@@ -140,7 +140,7 @@ namespace MethodsMap {
 			List<ListViewItem> itemList;
 
 			_lvwMethods.Items.Clear();
-			_methodHandlesMap.Clear();
+			_methodHandles.Clear();
 			itemList = new List<ListViewItem>();
 			foreach (Module module in _modules) {
 				for (int i = 0x06000001; i < int.MaxValue; i++) {
@@ -175,7 +175,7 @@ namespace MethodsMap {
 								itemList.Add(item);
 								break;
 							}
-					_methodHandlesMap.Add(item, methodBase.MethodHandle);
+					_methodHandles.Add(item, methodBase.MethodHandle);
 				}
 			}
 			_lvwMethods.Items.AddRange(itemList.ToArray());
