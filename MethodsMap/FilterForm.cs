@@ -30,11 +30,12 @@ namespace MethodsMap {
 				}
 		}
 
-		private void _tbSearchText_TextChanged(object sender, EventArgs e) => _methodsForm.Keyword = _tbSearchText.Text;
+		private void _tbSearchText_TextChanged(object sender, EventArgs e) {
+			_methodsForm.Keyword = _tbSearchText.Text;
+		}
 
 		private void _btnCancel_Click(object sender, EventArgs e) {
 			_modulesDictionary = null;
-			Dispose();
 		}
 
 		private void _btnOK_Click(object sender, EventArgs e) {
@@ -46,7 +47,6 @@ namespace MethodsMap {
 					moduleList.Add(_modulesDictionary[item]);
 			_methodsForm.Modules = moduleList.ToArray();
 			_modulesDictionary = null;
-			Dispose();
 		}
 	}
 }

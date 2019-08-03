@@ -40,7 +40,9 @@ namespace MethodsMap {
 			RefreshMethodsList();
 		}
 
-		private static T GetAssemblyAttribute<T>() => (T)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(T), false)[0];
+		private static T GetAssemblyAttribute<T>() {
+			return (T)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(T), false)[0];
+		}
 
 		private void _lvwMethods_Resize(object sender, EventArgs e) {
 			_chMethodAddress.Width = IntPtr.Size == 8 ? 200 : 100;
@@ -49,13 +51,16 @@ namespace MethodsMap {
 			_chMethodFullName.Width = _lvwMethods.Width - _chMethodToken.Width - _chMethodAddress.Width - _chMethodHandle.Width - 17;
 		}
 
-		private void _mnuRefresh_Click(object sender, EventArgs e) => RefreshMethodsList();
+		private void _mnuRefresh_Click(object sender, EventArgs e) {
+			RefreshMethodsList();
+		}
 
 		private void _mnuFilter_Click(object sender, EventArgs e) {
 			Module[] _oldModules;
 
 			_oldModules = _modules;
-			new FilterForm(this).ShowDialog();
+			using (FilterForm form = new FilterForm(this))
+				form.ShowDialog();
 			if (ReferenceEquals(_oldModules, _modules))
 				//操作实际上未执行
 				return;
@@ -84,9 +89,6 @@ namespace MethodsMap {
 					RuntimeMethodHandle methodHandle;
 					MethodBase methodBase;
 					MethodInfo methodInfo;
-					//DynamicMethod dynamicMethod;
-					//ILGenerator ilGenerator;
-					//int length;
 
 					methodHandle = _methodHandlesMap[item];
 					methodBase = MethodBase.GetMethodFromHandle(methodHandle);
@@ -95,17 +97,6 @@ namespace MethodsMap {
 						MessageBox.Show(methodBase.ToString() + " 不是 " + nameof(MethodInfo));
 						continue;
 					}
-					//dynamicMethod = new DynamicMethod(string.Empty, typeof(void), new type, true);
-					//ilGenerator = dynamicMethod.GetILGenerator();
-					//ilGenerator.Emit(OpCodes.Ldarg_0)
-					//if (!methodInfo.IsStatic)
-					//	ilGenerator.Emit(OpCodes.Ldc_I4_0);
-					//length = methodInfo.GetParameters().Length;
-					//for (int i = 0; i < length; i++)
-					//	ilGenerator.Emit(OpCodes.Ldc_I4_0);
-					//ilGenerator.EmitCall(OpCodes.Call, methodInfo, null);
-					//ilGenerator.Emit(OpCodes.Ret);
-					//dynamicMethod.Invoke(null, null);
 					NullInvoke(methodHandle, methodInfo);
 				}
 				catch {
@@ -117,33 +108,32 @@ namespace MethodsMap {
 			if (_lvwMethods.SelectedItems.Count == 0)
 				return;
 
-			List<string> stringList;
+			List<string> strings;
 			int maxLength;
-			StringBuilder builder;
+			StringBuilder sb;
 
-			stringList = new List<string>(_lvwMethods.SelectedItems.Count);
+			strings = new List<string>(_lvwMethods.SelectedItems.Count);
 			maxLength = 0;
 			foreach (ListViewItem listViewItem in _lvwMethods.SelectedItems) {
-				stringList.Add(listViewItem.Text);
+				strings.Add(listViewItem.Text);
 				if (listViewItem.Text.Length > maxLength)
 					maxLength = listViewItem.Text.Length;
 			}
 			maxLength += 8;
-			builder = new StringBuilder();
-			for (int i = 0; i < stringList.Count; i++) {
-				builder.Append(stringList[i]);
-				builder.Append(' ', maxLength - stringList[i].Length);
-				builder.Append(_lvwMethods.SelectedItems[i].SubItems[1].Text);
-				builder.Append(' ', 4);
-				builder.Append(_lvwMethods.SelectedItems[i].SubItems[2].Text);
-				builder.Append(' ', 4);
-				builder.Append(_lvwMethods.SelectedItems[i].SubItems[3].Text);
-				builder.AppendLine();
+			sb = new StringBuilder();
+			for (int i = 0; i < strings.Count; i++) {
+				sb.Append(strings[i]);
+				sb.Append(' ', maxLength - strings[i].Length);
+				sb.Append(_lvwMethods.SelectedItems[i].SubItems[1].Text);
+				sb.Append(' ', 4);
+				sb.Append(_lvwMethods.SelectedItems[i].SubItems[2].Text);
+				sb.Append(' ', 4);
+				sb.Append(_lvwMethods.SelectedItems[i].SubItems[3].Text);
+				sb.AppendLine();
 			}
 			Clipboard.Clear();
-			Clipboard.SetText(builder.ToString());
-			stringList.Clear();
-			builder = null;
+			Clipboard.SetText(sb.ToString());
+			strings.Clear();
 		}
 
 		private void RefreshMethodsList() {
@@ -197,9 +187,9 @@ namespace MethodsMap {
 			parameters = new object[] {
 				null,
 				new object[methodInfo.GetParameters().Length],
-				PropertyInfo_Signature.GetValue(methodInfo,null),
+				PropertyInfo_Signature.GetValue(methodInfo, null),
 				FieldInfo_m_methodAttributes.GetValue(methodInfo),
-				methodInfo.DeclaringType == null ? default(RuntimeTypeHandle) : methodInfo.DeclaringType.TypeHandle
+				methodInfo.DeclaringType == null ? default : methodInfo.DeclaringType.TypeHandle
 			};
 			return MethodInfo_InvokeMethodFast.Invoke(methodHandle, parameters);
 		}
