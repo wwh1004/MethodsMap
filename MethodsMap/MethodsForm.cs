@@ -28,9 +28,8 @@ namespace MethodsMap {
 
 		public MethodsForm() {
 			_methodHandles = new Dictionary<ListViewItem, RuntimeMethodHandle>();
-			_modules = new Module[0];
 			_keyword = string.Empty;
-			Text = GetAssemblyAttribute<AssemblyProductAttribute>().Product + " v" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " by " + GetAssemblyAttribute<AssemblyCopyrightAttribute>().Copyright.Substring(17);
+			Text = GetTitle();
 			InitializeComponent();
 			typeof(ListView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, _lvwMethods, new object[] { true });
 			_lvwMethods_Resize(_lvwMethods, new EventArgs());
@@ -38,10 +37,6 @@ namespace MethodsMap {
 				Assembly.GetEntryAssembly().ManifestModule
 			};
 			RefreshMethodsList();
-		}
-
-		private static T GetAssemblyAttribute<T>() {
-			return (T)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(T), false)[0];
 		}
 
 		private void _lvwMethods_Resize(object sender, EventArgs e) {
@@ -192,6 +187,27 @@ namespace MethodsMap {
 				methodInfo.DeclaringType == null ? default : methodInfo.DeclaringType.TypeHandle
 			};
 			return MethodInfo_InvokeMethodFast.Invoke(methodHandle, parameters);
+		}
+
+		private static string GetTitle() {
+			string productName;
+			string version;
+			string copyright;
+			int firstBlankIndex;
+			string copyrightOwnerName;
+			string copyrightYear;
+
+			productName = GetAssemblyAttribute<AssemblyProductAttribute>().Product;
+			version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+			copyright = GetAssemblyAttribute<AssemblyCopyrightAttribute>().Copyright.Substring(12);
+			firstBlankIndex = copyright.IndexOf(' ');
+			copyrightOwnerName = copyright.Substring(firstBlankIndex + 1);
+			copyrightYear = copyright.Substring(0, firstBlankIndex);
+			return $"{productName} v{version} by {copyrightOwnerName} {copyrightYear}";
+		}
+
+		private static T GetAssemblyAttribute<T>() {
+			return (T)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(T), false)[0];
 		}
 	}
 }
